@@ -1,10 +1,30 @@
-import telebot
-import requests
 import os
 import json
 import time
 import threading
+from flask import Flask
+import telebot
+import requests
 from telebot import types
+
+# ----------------- Render Web Server (Free Hosting Port Fix) -----------------
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is running online 24/7!"
+
+def run():
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# Flask সার্ভার ব্যাকগ্রাউন্ডে চালু করা হচ্ছে
+keep_alive()
+# ----------------------------------------------------------------------------
 
 BOT_TOKEN = '8545503833:AAGtZ_PdZtpjOVezajCJr_B-KztWKyUh16g'
 ADMIN_ID = 6535070545
@@ -40,6 +60,8 @@ def load_config():
 
 def save_config(config):
     with open(CONFIG_FILE, "w") as f: json.dump(config, f)
+
+# (নিচে আপনার বাকি কোডসমূহ বসিয়ে দিন...)
 
 def load_redeem():
     if not os.path.exists(REDEEM_FILE): return {}
