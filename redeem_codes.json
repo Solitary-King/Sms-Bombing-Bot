@@ -1,0 +1,35 @@
+{
+    "LOVE26": {
+        "limit": 50,
+        "status": "used"
+    },
+    "FREE26": {
+        "limit": 10,
+        "max_uses": 2,
+        "current_uses": 2,
+        "used_by": [
+            "6535070545",
+            "7874069686"
+        ]
+    },
+    "RRR": {
+        "limit": 10,
+        "max_uses": 1,
+        "current_uses": 1,
+        "used_by": [
+            "6535070545"
+        ]
+    },
+    "SH_100": {
+        "limit": 5,
+        "max_uses": 5,
+        "current_uses": 5,
+        "used_by": [
+            "7125427116",
+            "7704497580",
+            "7679000943",
+            "7623119505",
+            "8259588497"
+        ]
+    }
+}

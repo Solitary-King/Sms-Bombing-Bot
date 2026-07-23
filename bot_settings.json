@@ -1,0 +1,12 @@
+{
+    "channels": {
+        "@solitary_hacker": "https://t.me/solitary_hacker",
+        "@S_H_Backup": "https://t.me/S_H_Backup",
+        "@DebugStack": "https://t.me/DebugStack",
+        "@rimon_bio": "https://t.me/rimon_bio"
+    },
+    "apis": [
+        "http://127.0.0.1:5000/api?phone=",
+        "https://xos.bds0.top/api?phone="
+    ]
+}
