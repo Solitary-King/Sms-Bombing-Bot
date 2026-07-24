@@ -5,7 +5,21 @@ import json
 import time
 import threading
 from telebot import types
+from flask import Flask
 
+# Flask Server Setup for Render Free Web Service
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running smoothly on Render Free Web Service!"
+
+def run_flask():
+    # Render Dynamic PORT অথবা Default 10000 ব্যবহার করবে
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+# Bot Configuration
 BOT_TOKEN = '8545503833:AAGtZ_PdZtpjOVezajCJr_B-KztWKyUh16g'
 ADMIN_ID = 6535070545
 BOT_USERNAME = 'SH_BOMBING_bot'
@@ -58,7 +72,7 @@ def load_settings():
             "@DebugStack": "https://t.me/DebugStack"
         },
         "apis": [
-            "http://127.0.0.1:5000/api?phone="
+            "https://xos.bds0.top/api?phone="
         ]
     }
     if not os.path.exists(SETTINGS_FILE):
@@ -287,7 +301,6 @@ def show_admin_panel(chat_id, config, db):
 
     admin_markup = types.InlineKeyboardMarkup()
     
-    # ২ টি করে বাটন পার রো-তে রাখা হয়েছে নিখুঁত লেআউটের জন্য
     admin_markup.add(
         types.InlineKeyboardButton("📤 Send All Msg", callback_data="admin_send_all"),
         types.InlineKeyboardButton("⚙️ Single Limit", callback_data="admin_edit_limit")
@@ -307,8 +320,6 @@ def show_admin_panel(chat_id, config, db):
     admin_markup.add(
         types.InlineKeyboardButton("📋 View Blacklist", callback_data="admin_view_blacklist")
     )
-    
-    # চ্যানেল ও এপিআই সম্পর্কিত ৬টি বাটন গ্লোবাল মোডের ঠিক উপরে নিচে আনা হলো
     admin_markup.add(
         types.InlineKeyboardButton("📢 Add Channel", callback_data="admin_add_channel"),
         types.InlineKeyboardButton("❌ Rem Channel", callback_data="admin_rem_channel")
@@ -318,7 +329,7 @@ def show_admin_panel(chat_id, config, db):
         types.InlineKeyboardButton("🌐 Add API", callback_data="admin_add_api")
     )
     admin_markup.add(
-        types.InlineKeyboardButton("❌ Rem API", callback_data="admin_rem_api"),
+        types.InlineKeyboardButton("🗑️ Rem API", callback_data="admin_rem_api"),
         types.InlineKeyboardButton("📋 View APIs", callback_data="admin_view_apis")
     )
     
@@ -338,7 +349,6 @@ def admin_callbacks(call):
 
     if chat_id != ADMIN_ID: return
 
-    # ব্ল্যাকলিস্ট ভিউ
     if call.data == "admin_view_blacklist":
         config = load_config()
         bl = config.get("blacklist", [])
@@ -350,7 +360,6 @@ def admin_callbacks(call):
                 msg += f"{idx}. `{num}`\n"
         bot.send_message(chat_id, msg, reply_markup=back_inline_markup(), parse_mode="Markdown")
 
-    # চ্যানেল ম্যানেজমেন্ট
     elif call.data == "admin_add_channel":
         bot.delete_message(chat_id, call.message.message_id)
         sent_msg = bot.send_message(chat_id, "📢 নতুন চ্যানেল যোগ করতে ফরম্যাটটি পাঠান:\n\n`@username Link`\n\nউদাহরণ:\n`@mychannel https://t.me/mychannel`", parse_mode="Markdown")
@@ -376,7 +385,6 @@ def admin_callbacks(call):
                 msg += f"{idx}. `{username}` ➔ [Link]({link})\n"
         bot.send_message(chat_id, msg, reply_markup=back_inline_markup(), parse_mode="Markdown", disable_web_page_preview=True)
 
-    # এপিআই ম্যানেজমেন্ট
     elif call.data == "admin_add_api":
         bot.delete_message(chat_id, call.message.message_id)
         sent_msg = bot.send_message(chat_id, "🌐 নতুন API লিঙ্কটি পাঠান:\n(অবশ্যই শেষে `phone=` রাখবেন)\n\nউদাহরণ:\n`http://example.com/api?phone=`", parse_mode="Markdown")
@@ -452,7 +460,7 @@ def admin_callbacks(call):
         db = load_db()
         show_admin_panel(chat_id, config, db)
 
-# চ্যানেল অ্যাড / রিমুভ প্রসেসর
+# চ্যানেল প্রসেসর
 def process_add_channel(message):
     chat_id = message.chat.id
     text = message.text.strip().split()
@@ -476,7 +484,7 @@ def process_rem_channel(message):
     else:
         bot.send_message(chat_id, "❌ চ্যানেলটি পাওয়া যায়নি!", reply_markup=back_inline_markup())
 
-# এপিআই অ্যাড / রিমুভ প্রসেসর
+# এপিআই প্রসেসর
 def process_add_api(message):
     chat_id = message.chat.id
     api_url = message.text.strip()
@@ -733,5 +741,9 @@ def process_number(message):
     threading.Thread(target=background_bombing, args=(target_number,), daemon=True).start()
     bot.send_message(chat_id, f"✅ আপনার রিকোয়েস্ট সফল হয়েছে!\n\n{rem}", reply_markup=back_inline_markup())
 
-print("বট চালুর প্রস্তুত...")
-bot.infinity_polling()
+if __name__ == "__main__":
+    # Flask সার্ভারকে একটি আলাদা থ্রেডে চালানো হচ্ছে যাতে Web Service হিসেবে কাজ করে
+    threading.Thread(target=run_flask, daemon=True).start()
+    
+    print("বট এবং ফ্রি ওয়েব সার্ভার চালু হয়েছে...")
+    bot.infinity_polling()
